@@ -5,6 +5,17 @@ const questionSchema = new Schema({
     body: String,
     tags: [String],
     userId: { type: SchemaTypes.ObjectId, ref: 'User', required: true },
+    answers: [
+        {
+            id: {
+                type: SchemaTypes.ObjectId,
+                ref: 'Answer',
+            },
+            body: SchemaTypes.String,
+            upvotes: Number,
+            downvotes: Number,
+        },
+    ],
 });
 
 const Question = model('Question', questionSchema);

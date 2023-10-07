@@ -5,6 +5,7 @@ const answerSchema = new Schema({
     upvotes: Number,
     downvotes: Number,
     userId: { type: SchemaTypes.ObjectId, ref: 'User', required: true },
+    queId: { type: SchemaTypes.ObjectId, ref: 'Question', required: true },
 });
 
 const Answer = model('Answer', answerSchema);

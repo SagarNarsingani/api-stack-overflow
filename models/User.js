@@ -7,7 +7,19 @@ const userSchema = new Schema({
     downvotes: [{ type: SchemaTypes.ObjectId, ref: 'Answer' }],
     questions: [
         {
-            question_id: {
+            id: {
+                type: SchemaTypes.ObjectId,
+                ref: 'Question',
+                required: true,
+            },
+            title: String,
+            body: SchemaTypes.String,
+            tags: [String],
+        },
+    ],
+    answers: [
+        {
+            id: {
                 type: SchemaTypes.ObjectId,
                 ref: 'Question',
                 required: true,
