@@ -57,7 +57,7 @@ const getAnswers = async (req, res) => {
     try {
         const { userId } = req.query;
         const myAnswers = await User.findOne({ _id: userId }, { answers: 1 });
-        console.log(myAnswers);
+
         return res.json({
             status: 200,
             message: 'Retrieved the answers',
@@ -68,4 +68,31 @@ const getAnswers = async (req, res) => {
     }
 };
 
-module.exports = { postAnswer, getAnswers };
+const react = async (req, res) => {
+    try {
+        const { ansId, userId, queId } = req.body;
+        const upvoted = await User.findOne({ upvotes: ansId });
+
+        if (upvoted)
+            return res.json({ message: 'already reacted', status: 405 });
+
+        await User.updateOne({ _id: userId }, { $push: { upvotes: ansId } });
+
+        await Answer.updateOne({ _id: ansId }, { $inc: { upvotes: 1 } });
+        await Question.updateOne(
+            { _id: queId, 'answers.id': ansId },
+            {
+                $inc: { 'answers.$.upvotes': 1 },
+            }
+        );
+
+        return res.json({
+            message: 'reacted successfully',
+            status: 200,
+        });
+    } catch (error) {
+        console.log(`Could not upvote: ${error.message}`);
+    }
+};
+
+module.exports = { postAnswer, getAnswers, react };

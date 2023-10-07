@@ -36,7 +36,7 @@ const postQuestion = async (req, res) => {
                 }
             );
 
-            const res = await User.updateOne(
+            await User.updateOne(
                 { _id: userId, 'questions.id': id },
                 {
                     $set: {
@@ -71,7 +71,7 @@ const getQuestions = async (req, res) => {
             message: 'Retrieved the questions',
             data: {
                 myQuestions: myQuestions?.questions,
-                otherQuestions: otherQuestions?.question,
+                otherQuestions: otherQuestions,
             },
         });
     } catch (error) {
@@ -82,7 +82,6 @@ const getQuestions = async (req, res) => {
 const getQuestionData = async (req, res) => {
     try {
         const { id } = req.query;
-        console.log(id);
         const question = await Question.findById(id);
 
         return res.json({
