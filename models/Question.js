@@ -14,6 +14,11 @@ const questionSchema = new Schema({
             body: SchemaTypes.String,
             upvotes: Number,
             downvotes: Number,
+            userId: {
+                type: SchemaTypes.ObjectId,
+                ref: 'User',
+                required: true,
+            },
         },
     ],
 });

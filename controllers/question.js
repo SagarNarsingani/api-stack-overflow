@@ -3,24 +3,54 @@ const User = require('../models/User');
 
 const postQuestion = async (req, res) => {
     try {
-        const { title, body, tags, userId } = req.body;
-        console.log(title, body, tags, userId);
-        const question = await Question.create({ title, body, tags, userId });
-        const user = await User.updateOne(
-            { _id: userId },
-            {
-                $push: {
-                    questions: {
-                        id: question._id,
-                        title,
-                        body,
-                        tags,
+        const { title, body, tags, userId, id } = req.body;
+
+        if (!id) {
+            const question = await Question.create({
+                title,
+                body,
+                tags,
+                userId,
+            });
+            await User.updateOne(
+                { _id: userId },
+                {
+                    $push: {
+                        questions: {
+                            id: question._id,
+                            title,
+                            body,
+                            tags,
+                        },
                     },
-                },
-            }
-        );
-        console.log(user);
-        res.send('done');
+                }
+            );
+        } else {
+            await Question.updateOne(
+                { _id: id },
+                {
+                    title,
+                    body,
+                    tags,
+                    userId,
+                }
+            );
+
+            const res = await User.updateOne(
+                { _id: userId, 'questions.id': id },
+                {
+                    $set: {
+                        'questions.$.title': title,
+                        'questions.$.body': body,
+                        'questions.$.tags': tags,
+                    },
+                }
+            );
+        }
+        res.json({
+            message: 'Question Updated Successfully!',
+            status: 200,
+        });
     } catch (error) {
         console.log(`Couldn't post the question: ${error.message}`);
     }
@@ -54,7 +84,7 @@ const getQuestionData = async (req, res) => {
         const { id } = req.query;
         console.log(id);
         const question = await Question.findById(id);
-        console.log(question);
+
         return res.json({
             status: 200,
             message: 'Successfully retrieved message data',
